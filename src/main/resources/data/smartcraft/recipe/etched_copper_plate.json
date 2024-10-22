@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:stonecutting",
+  "category": "misc",
+  "ingredient": {
+    "item": "smartcraft:base_copper_plate"
+  },
+  "result": {
+    "id": "smartcraft:etched_copper_plate"
+  }
+}
+

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "BBB",
+    "CCC",
+    "BBB"
+  ],
+  "key": {
+    "B": {
+      "items": "minecraft:smooth_stone_slab"
+    },
+    "C": {
+      "item": "minecraft:copper_ingot"
+    }
+  },
+  "result": {
+    "id": "smartcraft:base_copper_plate",
+    "count": 6
+  }
+}
