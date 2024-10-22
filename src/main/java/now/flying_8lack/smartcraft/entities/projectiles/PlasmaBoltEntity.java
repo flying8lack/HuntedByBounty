@@ -1,12 +1,9 @@
 package now.flying_8lack.smartcraft.entities.projectiles;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -28,10 +25,16 @@ public class PlasmaBoltEntity extends AbstractArrow {
 
     public int life;
     public double travel = 0;
+    private float on_hit_damage;
     public static final EntityDataAccessor<Boolean> AMPED = SynchedEntityData.defineId(PlasmaBoltEntity.class, EntityDataSerializers.BOOLEAN);
     public PlasmaBoltEntity(EntityType<? extends AbstractArrow> entityType, Level level) {
         super(entityType, level);
         this.pickup = Pickup.ALLOWED;
+
+    }
+
+    public void setOnHitDamage(float dmg){
+        this.on_hit_damage = dmg;
     }
 
 
@@ -145,9 +148,8 @@ public class PlasmaBoltEntity extends AbstractArrow {
     protected void onHitEntity(@NotNull EntityHitResult result) {
         super.onHitEntity(result);
         if(!this.level().isClientSide()){
-            Entity e = result.getEntity();
-            float dmg_reduce = 1.0f;//Mth.clamp( 1.0f, 1, 1000);
-            e.hurt(this.damageSources().onFire(), 10/dmg_reduce);
+            Entity e = result.getEntity();//Mth.clamp( 1.0f, 1, 1000);
+            e.hurt(this.damageSources().onFire(), this.on_hit_damage);
 
 
 
@@ -156,12 +158,12 @@ public class PlasmaBoltEntity extends AbstractArrow {
     }
 
     @Override
-    protected ItemStack getDefaultPickupItem() {
+    protected @NotNull ItemStack getDefaultPickupItem() {
         return new ItemStack(Items.DIAMOND);
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+    protected void defineSynchedData(SynchedEntityData.@NotNull Builder builder) {
         super.defineSynchedData(builder);
         builder.define(AMPED, false);
 
