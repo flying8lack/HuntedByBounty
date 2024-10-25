@@ -11,7 +11,7 @@ import now.flying_8lack.smartcraft.entities.projectiles.PlasmaBoltEntity;
 import static now.flying_8lack.smartcraft.main.SmartCraft.MOD_ID;
 
 public class PlasmaBoltRender extends EntityRenderer<PlasmaBoltEntity> {
-    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/plasma_bolt");
+    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(MOD_ID, "plasma_bolt");
     private final PlasmaBoltModel model;
     public PlasmaBoltRender(EntityRendererProvider.Context context) {
         super(context);
@@ -30,9 +30,10 @@ public class PlasmaBoltRender extends EntityRenderer<PlasmaBoltEntity> {
         super.render(p_entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
         poseStack.pushPose();
         model.renderToBuffer(poseStack,
-                bufferSource.getBuffer(RenderType.solid()),
+                bufferSource.getBuffer(RenderType.entitySolid(TEXTURE)),
                 packedLight,
                 0);
+
         poseStack.popPose();
     }
 }

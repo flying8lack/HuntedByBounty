@@ -12,7 +12,8 @@ import java.util.function.Supplier;
 
 public enum TierSystem implements Tier {
 
-    HEAVYIRON(404, 3.7f, 3.236f, 10, () -> Ingredient.of(Items.IRON_INGOT), BlockTags.INCORRECT_FOR_IRON_TOOL);
+    HEAVYIRON(404, 3.7f, 3.236f, 10, () -> Ingredient.of(Items.IRON_INGOT), BlockTags.INCORRECT_FOR_IRON_TOOL),
+    GLOWCON(249, 5.98f, 2.2f, 20, () -> Ingredient.of(Items.GLOWSTONE_DUST), BlockTags.INCORRECT_FOR_IRON_TOOL);
 
 
     private final int uses;

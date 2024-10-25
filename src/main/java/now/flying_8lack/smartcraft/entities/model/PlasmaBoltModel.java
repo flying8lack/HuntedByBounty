@@ -24,7 +24,7 @@ import static now.flying_8lack.smartcraft.main.SmartCraft.MOD_ID;
 
 public class PlasmaBoltModel<T extends PlasmaBoltEntity> extends EntityModel<T> {
     // This layer location should be baked with EntityRendererProvider.Context in the entity renderer and passed into this model's constructor
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(MOD_ID, "textures/entity/plasma_bolt"), "main");
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(MOD_ID, "plasma_bolt"), "main");
     private final ModelPart body;
 
 

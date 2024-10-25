@@ -1,13 +1,21 @@
 package now.flying_8lack.smartcraft.main;
 
+import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import now.flying_8lack.smartcraft.Cap.PlasmaStorage;
+import now.flying_8lack.smartcraft.Cap.PlasmaStorageProvider;
 import now.flying_8lack.smartcraft.entities.model.PlasmaBoltModel;
 import now.flying_8lack.smartcraft.entities.projectiles.PlasmaBoltEntity;
 import now.flying_8lack.smartcraft.entities.render.PlasmaBoltRender;
+import now.flying_8lack.smartcraft.util.interfaces.IPlasmaStorage;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -36,19 +44,22 @@ public class SmartCraft
 //    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MOD_ID);
 
 
+
     // The constructor for the mod class is the first code that is run when your mod is loaded.
     // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
     public SmartCraft(IEventBus modEventBus, ModContainer modContainer)
     {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
+        modEventBus.addListener(this::registerCapabilities);
 
-
+        ModDataAttachment.register(modEventBus);
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModBlocksEntity.register(modEventBus);
         ModDataComponentRegister.register(modEventBus);
         ModEntity.register(modEventBus);
+        ModCreativeTab.register(modEventBus);
 
 
         // Register ourselves for server and other game events we are interested in.
@@ -61,6 +72,15 @@ public class SmartCraft
 
         // Register our mod's ModConfigSpec so that FML can create and load the config file for us
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+    }
+
+    private void registerCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerItem(
+                ModCapability.PLASMA_STORAGE, // capability to register for
+                (itemStack, context) -> new PlasmaStorageProvider(),
+                ModItems.PO_101.get());
+
+
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
@@ -82,6 +102,7 @@ public class SmartCraft
         public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
             event.registerLayerDefinition(PlasmaBoltModel.LAYER_LOCATION, PlasmaBoltModel::createBodyLayer);
         }
+
 
     }
 

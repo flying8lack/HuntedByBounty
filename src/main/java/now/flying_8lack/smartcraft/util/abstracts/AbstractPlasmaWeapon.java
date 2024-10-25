@@ -7,101 +7,72 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.attachment.IAttachmentHolder;
+import net.neoforged.neoforge.common.extensions.IItemExtension;
 import now.flying_8lack.smartcraft.entities.projectiles.PlasmaBoltEntity;
+import now.flying_8lack.smartcraft.main.ModCapability;
 import now.flying_8lack.smartcraft.main.ModEntity;
 import now.flying_8lack.smartcraft.util.interfaces.IPlasmaDeployer;
+import now.flying_8lack.smartcraft.util.interfaces.IPlasmaStorage;
 
-public abstract class AbstractPlasmaWeapon extends Item implements IPlasmaDeployer {
-
-    private final int MAX_CHARGES;
-    public int charges;
-    private boolean allowFire = true;
+public abstract class AbstractPlasmaWeapon extends Item implements IPlasmaDeployer, IItemExtension {
 
 
-    public AbstractPlasmaWeapon(Properties properties, int MAX_CHARGES) {
+    private int coolDown = 10;
+
+
+
+
+    public AbstractPlasmaWeapon(Properties properties) {
         super(properties);
-        this.MAX_CHARGES = MAX_CHARGES;
-        this.charges = MAX_CHARGES;
+
     }
+
+    @Override
+    abstract public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand);
+    abstract public void consume(ItemStack item);
+    public abstract void Reload(ItemStack item);
 
     @Override
     public abstract float getBoltDamage();
 
-    public boolean shouldCheckForAmmo(){
-        return true;
+
+
+    public boolean fireAllowed(){
+        return this.coolDown == 0;
     }
 
-    public abstract void Reload();
+    public void coolDownTick() {
 
-    
-    public void setCharges(int amount){
-        this.charges = Math.min(amount, this.getMaxCharges());
-    }
-
-
-
-    public int getMaxCharges(){
-        return this.MAX_CHARGES;
-    }
-
-    public void useCharge(int amount){
-        this.charges -= amount;
-    }
-
-    public int getCharges(){
-        return this.charges;
-    }
-    
-    public void consumeCharges(){
-        if(getCharges() > 0){
-            this.useCharge(1);
-            this.setAllowFire(true);
-        } else {
-            this.setAllowFire(false);
+        if (coolDown == 0) {
+            return;
         }
+        coolDown--;
+
     }
 
-    public void setAllowFire(boolean state){
-        this.allowFire = state;
-    }
-    
-    public boolean canFire(){
-        return this.allowFire;
+
+    public void setCoolDown(int coolDown) {
+        this.coolDown = coolDown;
     }
 
 
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
-        this.firePlasma(player, level);
+    public PlasmaBoltEntity createBolt(Entity shooter, Vec3 pos, float RotX, float RotY, Level level) {
+        PlasmaBoltEntity bolt = new PlasmaBoltEntity(ModEntity.PLASMA_BOLT.get(), level);
+        bolt.setOnHitDamage(this.getBoltDamage());
 
-        return super.use(level, player, usedHand);
+        bolt.setOwner(shooter);
+        bolt.setPos(pos);
+        bolt.shootFromRotation(shooter,
+                RotX,
+                RotY,
+                0.0f,
+                PLASMA_VELOCITY, this.getInaccuracy());
+
+        return bolt;
     }
 
-
-    public PlasmaBoltEntity createBolt(Level level) {
-        return new PlasmaBoltEntity(ModEntity.PLASMA_BOLT.get(), level);
-    }
-
-    @Override
-    public void firePlasma(Entity shooter, Level level) {
-        if(!level.isClientSide()){
-            this.consumeCharges();
-            if (this.canFire() || !this.shouldCheckForAmmo()) {
-                PlasmaBoltEntity bolt = this.createBolt(level);
-
-                bolt.setOnHitDamage(this.getBoltDamage());
-
-                bolt.setOwner(shooter);
-                bolt.setPos(shooter.getOnPos().above(1).getCenter());
-                bolt.shootFromRotation(shooter,
-                        shooter.getXRot(),
-                        shooter.getYRot(),
-                        0.0f,
-                        PLASMA_VELOCITY, this.getInaccuracy());
-                level.addFreshEntity(bolt);
-                this.consumeCharges();
-            }
-        }
-    }
 }
