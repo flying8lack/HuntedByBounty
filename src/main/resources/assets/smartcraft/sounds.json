@@ -1,0 +1,9 @@
+{
+  "plasma_fire": {
+    "sounds": [
+      {
+        "name": "smartcraft:plasma_fire"
+      }
+    ]
+  }
+}
